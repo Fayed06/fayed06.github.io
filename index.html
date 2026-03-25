@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Muhammad Rafly Alfayed — Backend Software Engineer</title>
+  <meta name="description" content="Backend Software Engineer specializing in Go, distributed systems, and payment infrastructure. 2+ years building PCI-certified systems and microservices.">
+  <meta property="og:title" content="Muhammad Rafly Alfayed — Backend Software Engineer">
+  <meta property="og:description" content="Building secure, scalable distributed systems in Go for the financial industry.">
+  <meta property="og:url" content="https://fayed06.github.io">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0e0f;
+      --bg-secondary: #0f1416;
+      --bg-card: #131a1c;
+      --bg-card-hover: #162024;
+      --border: #1e2d30;
+      --border-bright: #264d52;
+      --accent: #00d4aa;
+      --accent-dim: #00a884;
+      --accent-glow: rgba(0, 212, 170, 0.12);
+      --accent-glow-bright: rgba(0, 212, 170, 0.22);
+      --text-primary: #e8f0f1;
+      --text-secondary: #8fa8ac;
+      --text-muted: #4a6468;
+      --red: #ff6b6b;
+      --yellow: #ffd93d;
+      --blue: #6bcfff;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'IBM Plex Sans', sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: var(--sans);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NOISE TEXTURE ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 999;
+      opacity: 0.4;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-primary); }
+    ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(10, 14, 15, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-logo::before { content: '> '; color: var(--text-muted); }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      letter-spacing: 0.08em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 4px;
+    }
+    .nav-hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text-secondary);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ── MOBILE NAV ── */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 56px;
+      left: 0;
+      right: 0;
+      background: rgba(10, 14, 15, 0.97);
+      border-bottom: 1px solid var(--border);
+      padding: 1.5rem 2rem;
+      z-index: 99;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a {
+      display: block;
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      letter-spacing: 0.08em;
+    }
+    .mobile-menu a:last-child { border-bottom: none; }
+    .mobile-menu a:hover { color: var(--accent); }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 2rem; max-width: 1000px; margin: 0 auto; }
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+    .section-label::before { content: '// '; color: var(--text-muted); }
+
+    h2.section-title {
+      font-family: var(--mono);
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2.5rem;
+      line-height: 1.2;
+    }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      max-width: 1000px;
+      padding-top: 80px;
+    }
+
+    .hero-prompt {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hero-prompt::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 1.8s step-end infinite;
+    }
+
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+    h1 {
+      font-family: var(--mono);
+      font-size: clamp(2.2rem, 6vw, 4.2rem);
+      font-weight: 700;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-role {
+      font-family: var(--mono);
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: var(--accent);
+      font-weight: 400;
+      margin-bottom: 1.5rem;
+      letter-spacing: 0.02em;
+    }
+
+    .hero-tagline {
+      font-family: var(--sans);
+      font-size: clamp(0.95rem, 2vw, 1.1rem);
+      color: var(--text-secondary);
+      max-width: 540px;
+      line-height: 1.7;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .btn {
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      letter-spacing: 0.06em;
+      padding: 0.65rem 1.4rem;
+      border-radius: 3px;
+      text-decoration: none;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #050a0b;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background: #00f0c2;
+      box-shadow: 0 0 20px var(--accent-glow-bright);
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border-bright);
+      color: var(--text-secondary);
+    }
+    .btn-outline:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+
+    .hero-scroll {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      transition: color 0.2s;
+    }
+    .hero-scroll:hover { color: var(--accent); }
+    .hero-scroll::after {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--border-bright);
+    }
+
+    /* ── TERMINAL GRID BG ── */
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 45%;
+      height: 100vh;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: 0.06;
+    }
+
+    /* ── ABOUT ── */
+    #about p {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      line-height: 1.85;
+      max-width: 680px;
+    }
+    #about p + p { margin-top: 1rem; }
+
+    .about-meta {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+    .about-stat {
+      border-left: 2px solid var(--accent);
+      padding-left: 1rem;
+    }
+    .about-stat-num {
+      font-family: var(--mono);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .about-stat-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    /* ── EXPERIENCE ── */
+    .exp-company {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+    .exp-title {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .exp-date {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      margin-top: 0.15rem;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .project-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.4rem;
+      transition: all 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: transparent;
+      transition: background 0.25s;
+    }
+
+    .project-card:hover {
+      border-color: var(--border-bright);
+      background: var(--bg-card-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    .project-card:hover::before { background: var(--accent); }
+
+    .project-card.featured {
+      grid-column: 1 / -1;
+      border-color: var(--border-bright);
+      background: linear-gradient(135deg, var(--bg-card) 0%, #0d1f22 100%);
+    }
+    .project-card.featured::before { background: var(--accent); }
+
+    .project-badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.2rem 0.6rem;
+      border-radius: 2px;
+      margin-bottom: 0.75rem;
+    }
+    .badge-flagship {
+      background: rgba(0, 212, 170, 0.12);
+      color: var(--accent);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+    }
+    .badge-complete {
+      background: rgba(107, 207, 255, 0.1);
+      color: var(--blue);
+      border: 1px solid rgba(107, 207, 255, 0.25);
+    }
+    .badge-progress {
+      background: rgba(255, 217, 61, 0.1);
+      color: var(--yellow);
+      border: 1px solid rgba(255, 217, 61, 0.25);
+    }
+
+    .project-name {
+      font-family: var(--mono);
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.6rem;
+    }
+
+    .project-desc {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin-bottom: 1rem;
+    }
+
+    .project-desc li {
+      list-style: none;
+      padding-left: 1rem;
+      position: relative;
+      margin-bottom: 0.25rem;
+    }
+    .project-desc li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent-dim);
+      font-size: 0.75rem;
+      top: 0.05em;
+    }
+
+    .tech-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+    }
+
+    .tech-tag {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      padding: 0.2rem 0.55rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .exp-intern {
+      margin-top: 2rem;
+      padding: 1.25rem 1.4rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .exp-intern p {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-top: 0.4rem;
+    }
+
+    /* ── SKILLS ── */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .skill-group {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem;
+    }
+
+    .skill-group-name {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .skill-group-name::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 1px;
+    }
+
+    .skill-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .skill-tag {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      padding: 0.25rem 0.65rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      color: var(--text-secondary);
+      letter-spacing: 0.04em;
+      transition: all 0.2s;
+    }
+    .skill-tag:hover {
+      border-color: var(--border-bright);
+      color: var(--accent);
+      background: var(--accent-glow);
+    }
+    .skill-tag.primary {
+      border-color: rgba(0, 212, 170, 0.3);
+      color: var(--accent);
+      background: rgba(0, 212, 170, 0.07);
+    }
+
+    /* ── ARCHITECTURE DIAGRAM ── */
+    #architecture {
+      padding-top: 0;
+    }
+
+    .diagram-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 1.25rem;
+      letter-spacing: 0.06em;
+    }
+
+    /* ── EDUCATION ── */
+    .edu-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      max-width: 580px;
+    }
+
+    .edu-degree {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.25rem;
+    }
+    .edu-school {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+    .edu-period {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+    .edu-gpa {
+      font-family: var(--mono);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      text-align: right;
+      white-space: nowrap;
+    }
+    .edu-gpa-label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* ── CONTACT / FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 4rem 2rem 3rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .contact-headline {
+      font-family: var(--mono);
+      font-size: clamp(1.2rem, 3vw, 1.8rem);
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .contact-sub {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-bottom: 2rem;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+
+    .open-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      border: 1px solid rgba(0, 212, 170, 0.3);
+      border-radius: 100px;
+      padding: 0.3rem 0.9rem;
+      letter-spacing: 0.06em;
+    }
+    .open-badge::before {
+      content: '';
+      display: block;
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: blink 2s step-end infinite;
+    }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-copy {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .footer-langs {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* ── FADE IN ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── SVG DIAGRAM ── */
+    .arch-svg { width: 100%; max-width: 860px; display: block; margin: 0 auto; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .project-card.featured { grid-column: auto; }
+      .exp-intern { flex-direction: column; }
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+      .about-meta { gap: 1.25rem; }
+      section { padding: 3.5rem 1.25rem; }
+      footer { padding: 3rem 1.25rem 2rem; }
+    }
+
+    @media (max-width: 480px) {
+      .edu-card { flex-direction: column; }
+      .edu-gpa { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="#hero">fayed06</a>
+  <ul class="nav-links">
+    <li><a href="#about">about</a></li>
+    <li><a href="#experience">experience</a></li>
+    <li><a href="#skills">skills</a></li>
+    <li><a href="#architecture">architecture</a></li>
+    <li><a href="#education">education</a></li>
+    <li><a href="#contact">contact</a></li>
+  </ul>
+  <button class="nav-hamburger" aria-label="Toggle menu" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#about" onclick="toggleMenu()">about</a>
+  <a href="#experience" onclick="toggleMenu()">experience</a>
+  <a href="#skills" onclick="toggleMenu()">skills</a>
+  <a href="#architecture" onclick="toggleMenu()">architecture</a>
+  <a href="#education" onclick="toggleMenu()">education</a>
+  <a href="#contact" onclick="toggleMenu()">contact</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-prompt">~/jakarta/backend</div>
+  <h1>Muhammad<br>Rafly Alfayed</h1>
+  <p class="hero-role">Backend Software Engineer</p>
+  <p class="hero-tagline">Building secure, scalable distributed systems in Go for the financial industry.</p>
+  <div class="hero-links">
+    <a href="mailto:mralfayed@gmail.com" class="btn btn-primary">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+      mralfayed@gmail.com
+    </a>
+    <a href="https://github.com/fayed06" target="_blank" rel="noopener" class="btn btn-outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      GitHub
+    </a>
+    <a href="https://www.linkedin.com/in/fyd06/" target="_blank" rel="noopener" class="btn btn-outline">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      LinkedIn
+    </a>
+  </div>
+  <a href="#about" class="hero-scroll">scroll to explore</a>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <p class="section-label fade-in">about</p>
+  <h2 class="section-title fade-in">Who I Am</h2>
+  <div class="fade-in">
+    <p>I'm a Backend Software Engineer with 2+ years of experience designing and building production-grade distributed systems in Go. I work in the payment and fintech industry, where I've architected event-driven microservices, secure key distribution pipelines serving 500+ devices with PCI certification, and compliance-driven platforms handling role-based access and approval workflows.</p>
+    <p>I'm passionate about system reliability, low-latency architecture, and writing clean, performant backend code at scale. Currently based in Jakarta, Indonesia.</p>
+    <div class="about-meta">
+      <div class="about-stat">
+        <div class="about-stat-num">2+</div>
+        <div class="about-stat-label">Years Experience</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num">500+</div>
+        <div class="about-stat-label">Devices Served (RKI)</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num">PCI</div>
+        <div class="about-stat-label">Certified System</div>
+      </div>
+      <div class="about-stat">
+        <div class="about-stat-num">4</div>
+        <div class="about-stat-label">Production Systems Built</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <p class="section-label fade-in">experience</p>
+  <h2 class="section-title fade-in">What I've Built</h2>
+
+  <div class="fade-in">
+    <div class="exp-company">PT. Prima Vista Solusi</div>
+    <div class="exp-title">Software Engineer</div>
+    <div class="exp-date">May 2024 – Present · Jakarta, Indonesia</div>
+  </div>
+
+  <div class="projects-grid" style="margin-top:1.5rem">
+
+    <!-- FLAGSHIP -->
+    <div class="project-card featured fade-in">
+      <span class="project-badge badge-flagship">⭐ Flagship Project</span>
+      <div class="project-name">Remote Key Injection (RKI) System</div>
+      <div class="project-desc">
+        <ul>
+          <li>PCI-certified system for secure encrypted key distribution to 500+ EDC terminals</li>
+          <li>Event-driven architecture using Proto.Actor (actor model) in Go</li>
+          <li>Real-time delivery via persistent WebSocket connections</li>
+          <li>Implemented TR-34 key exchange protocol with HSM integration</li>
+          <li>Terminal communication using ISO 8583 message standard</li>
+          <li>Replaced costly manual field injections, significantly reducing operational costs</li>
+        </ul>
+      </div>
+      <div class="tech-tags">
+        <span class="tech-tag primary">Go</span>
+        <span class="tech-tag">Proto.Actor</span>
+        <span class="tech-tag">WebSocket</span>
+        <span class="tech-tag">TR-34</span>
+        <span class="tech-tag">HSM</span>
+        <span class="tech-tag">ISO 8583</span>
+        <span class="tech-tag">SQL Server</span>
+      </div>
+    </div>
+
+    <!-- USER MGMT -->
+    <div class="project-card fade-in">
+      <span class="project-badge badge-complete">✓ Completed</span>
+      <div class="project-name">User Management System</div>
+      <div class="project-desc">
+        <ul>
+          <li>Built from scratch with Checker-Maker approval workflow</li>
+          <li>Role-Based Access Control (RBAC) with hierarchical Data Ownership</li>
+          <li>RESTful APIs for multi-level user privilege management</li>
+        </ul>
+      </div>
+      <div class="tech-tags">
+        <span class="tech-tag primary">Go</span>
+        <span class="tech-tag">Gin</span>
+        <span class="tech-tag">GORM</span>
+        <span class="tech-tag">SQL Server</span>
+        <span class="tech-tag">REST API</span>
+      </div>
+    </div>
+
+    <!-- ACME -->
+    <div class="project-card fade-in">
+      <span class="project-badge badge-complete">✓ Completed</span>
+      <div class="project-name">ACME Certificate Client</div>
+      <div class="project-desc">
+        <ul>
+          <li>Automated TLS certificate lifecycle management</li>
+          <li>Interfaces with internal Certificate Authority server</li>
+          <li>Removed manual provisioning for 1,000+ terminal devices</li>
+        </ul>
+      </div>
+      <div class="tech-tags">
+        <span class="tech-tag primary">Go</span>
+        <span class="tech-tag">ACME Protocol</span>
+        <span class="tech-tag">TLS/PKI</span>
+      </div>
+    </div>
+
+    <!-- ACQUIRING -->
+    <div class="project-card fade-in" style="grid-column: 1 / -1">
+      <span class="project-badge badge-progress">↻ In Progress</span>
+      <div class="project-name">Acquiring Engine Refactor</div>
+      <div class="project-desc">
+        <ul>
+          <li>Modernizing legacy acquiring system into microservices — owning 3 services: Account, Merchant, and Acquirer Management</li>
+          <li>Services behind Envoy API Gateway using gRPC/Protobuf; multi-network GPN integrations (Jalin, Rintis, Artajasa)</li>
+          <li>Supports ISO 8583 and HTTP transaction flows</li>
+        </ul>
+      </div>
+      <div class="tech-tags">
+        <span class="tech-tag primary">Go</span>
+        <span class="tech-tag">Proto.Actor</span>
+        <span class="tech-tag">gRPC/Protobuf</span>
+        <span class="tech-tag">Envoy</span>
+        <span class="tech-tag">SQL Server</span>
+        <span class="tech-tag">ISO 8583</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- INTERN -->
+  <div class="exp-intern fade-in">
+    <div>
+      <div class="exp-company">PDAM Intan Banjar</div>
+      <div class="exp-title">IT Developer Intern</div>
+      <div class="exp-date">Jan 2019 – Apr 2019</div>
+      <p>Built real-time water volume monitoring with IoT sensors. Reduced system downtime by 30% through infrastructure improvements.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <p class="section-label fade-in">skills</p>
+  <h2 class="section-title fade-in">Technical Stack</h2>
+  <div class="skills-grid fade-in">
+    <div class="skill-group">
+      <div class="skill-group-name">Languages</div>
+      <div class="skill-tags">
+        <span class="skill-tag primary">Go</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">Java</span>
+        <span class="skill-tag">SQL</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-name">Frameworks & Libraries</div>
+      <div class="skill-tags">
+        <span class="skill-tag primary">Gin</span>
+        <span class="skill-tag primary">GORM</span>
+        <span class="skill-tag">Proto.Actor</span>
+        <span class="skill-tag">gRPC/Protobuf</span>
+        <span class="skill-tag">Express.js</span>
+        <span class="skill-tag">Spring Boot</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-name">Databases</div>
+      <div class="skill-tags">
+        <span class="skill-tag primary">SQL Server</span>
+        <span class="skill-tag">PostgreSQL</span>
+        <span class="skill-tag">MySQL</span>
+        <span class="skill-tag">Cloud SQL</span>
+        <span class="skill-tag">MongoDB</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-name">Architecture</div>
+      <div class="skill-tags">
+        <span class="skill-tag">Microservices</span>
+        <span class="skill-tag">Event-Driven</span>
+        <span class="skill-tag">Actor Model</span>
+        <span class="skill-tag">RESTful APIs</span>
+        <span class="skill-tag">CDC / Debezium</span>
+        <span class="skill-tag">Kafka</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-name">Cloud & DevOps</div>
+      <div class="skill-tags">
+        <span class="skill-tag">GCP</span>
+        <span class="skill-tag">Docker</span>
+        <span class="skill-tag">Kubernetes</span>
+        <span class="skill-tag">Envoy API Gateway</span>
+        <span class="skill-tag">Jenkins</span>
+        <span class="skill-tag">GitLab CI/CD</span>
+        <span class="skill-tag">Linux</span>
+      </div>
+    </div>
+    <div class="skill-group">
+      <div class="skill-group-name">Security & Protocols</div>
+      <div class="skill-tags">
+        <span class="skill-tag primary">TLS/PKI</span>
+        <span class="skill-tag primary">HSM Integration</span>
+        <span class="skill-tag">ACME Protocol</span>
+        <span class="skill-tag">TR-34</span>
+        <span class="skill-tag">ISO 8583</span>
+        <span class="skill-tag">RBAC</span>
+        <span class="skill-tag">RKI</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture" style="padding-top:0">
+  <p class="section-label fade-in">system design</p>
+  <h2 class="section-title fade-in">Acquiring Engine Architecture</h2>
+  <div class="diagram-container fade-in">
+    <svg class="arch-svg" viewBox="0 0 860 460" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Acquiring engine system architecture diagram">
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#264d52"/>
+        </marker>
+        <marker id="arr-acc" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#00d4aa"/>
+        </marker>
+      </defs>
+
+      <!-- Labels -->
+      <text x="14" y="22" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="1">NON-CDE SCOPE</text>
+      <text x="530" y="22" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="9" letter-spacing="1">CDE SCOPE</text>
+
+      <!-- CDE boundary -->
+      <rect x="522" y="30" width="326" height="420" rx="4" fill="none" stroke="#1e2d30" stroke-width="1" stroke-dasharray="4,3"/>
+
+      <!-- CLIENT -->
+      <rect x="14" y="40" width="100" height="40" rx="4" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="64" y="57" fill="#e8f0f1" font-family="JetBrains Mono,monospace" font-size="9.5" text-anchor="middle" font-weight="600">Browser</text>
+      <text x="64" y="70" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">HTTP/REST</text>
+
+      <!-- EDC -->
+      <rect x="14" y="130" width="100" height="40" rx="4" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="64" y="147" fill="#e8f0f1" font-family="JetBrains Mono,monospace" font-size="9.5" text-anchor="middle" font-weight="600">EDC Terminal</text>
+      <text x="64" y="160" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">ISO 8583</text>
+
+      <!-- ENVOY -->
+      <rect x="178" y="40" width="120" height="40" rx="4" fill="#0d1f22" stroke="#00d4aa" stroke-width="1.5"/>
+      <text x="238" y="57" fill="#00d4aa" font-family="JetBrains Mono,monospace" font-size="9.5" text-anchor="middle" font-weight="600">Envoy Gateway</text>
+      <text x="238" y="70" fill="#00a884" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">gRPC / HTTP</text>
+
+      <!-- EDC ACCEPTOR -->
+      <rect x="178" y="120" width="120" height="40" rx="4" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="238" y="137" fill="#e8f0f1" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle" font-weight="600">EDC Acceptor</text>
+      <text x="238" y="150" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7.5" text-anchor="middle">Service</text>
+
+      <!-- Microservices box -->
+      <rect x="370" y="28" width="138" height="200" rx="4" fill="#0f1416" stroke="#1e2d30" stroke-width="1"/>
+      <text x="439" y="44" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="8" text-anchor="middle" letter-spacing="0.5">MICROSERVICES</text>
+
+      <rect x="382" y="54" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="439" y="66" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">Account Mgmt</text>
+      <text x="439" y="77" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Proto.Actor</text>
+
+      <rect x="382" y="92" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="439" y="104" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">Merchant Mgmt</text>
+      <text x="439" y="115" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Proto.Actor</text>
+
+      <rect x="382" y="130" width="114" height="30" rx="3" fill="#0d1f22" stroke="#00d4aa" stroke-width="1"/>
+      <text x="439" y="142" fill="#00d4aa" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">Acquirer Mgmt</text>
+      <text x="439" y="153" fill="#00a884" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Proto.Actor</text>
+
+      <rect x="382" y="168" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="439" y="180" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPN Tx Services</text>
+      <text x="439" y="191" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Jalin / Rintis / Artajasa</text>
+
+      <!-- DB -->
+      <rect x="382" y="250" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="439" y="262" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">SQL Server</text>
+      <text x="439" y="273" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Transactional DB</text>
+
+      <!-- HSM -->
+      <rect x="548" y="54" width="114" height="30" rx="3" fill="#0d1f22" stroke="#00d4aa" stroke-width="1.5"/>
+      <text x="605" y="66" fill="#00d4aa" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle" font-weight="600">HSM</text>
+      <text x="605" y="77" fill="#00a884" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Crypto Operations</text>
+
+      <!-- RKI System -->
+      <rect x="548" y="104" width="114" height="30" rx="3" fill="#0d1f22" stroke="#00d4aa" stroke-width="1.5"/>
+      <text x="605" y="116" fill="#00d4aa" font-family="JetBrains Mono,monospace" font-size="9" text-anchor="middle" font-weight="600">RKI System</text>
+      <text x="605" y="127" fill="#00a884" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">TR-34 / ISO 8583</text>
+
+      <!-- ETL + DWH -->
+      <rect x="548" y="154" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="605" y="166" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">ETL Pipeline</text>
+      <text x="605" y="177" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Kafka / Debezium</text>
+
+      <rect x="548" y="204" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="605" y="216" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">DWH / Reports</text>
+      <text x="605" y="227" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Settlement</text>
+
+      <!-- GPN External -->
+      <rect x="714" y="154" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="771" y="166" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">GPN Networks</text>
+      <text x="771" y="177" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">Jalin / Rintis / Artajasa</text>
+
+      <!-- CA Server -->
+      <rect x="714" y="104" width="114" height="30" rx="3" fill="#131a1c" stroke="#264d52" stroke-width="1"/>
+      <text x="771" y="116" fill="#8fa8ac" font-family="JetBrains Mono,monospace" font-size="8.5" text-anchor="middle">CA Server</text>
+      <text x="771" y="127" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="7" text-anchor="middle">ACME / TLS/PKI</text>
+
+      <!-- ARROWS -->
+      <!-- Browser → Envoy -->
+      <line x1="114" y1="60" x2="177" y2="60" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- EDC → EDC Acceptor -->
+      <line x1="114" y1="140" x2="177" y2="140" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- Envoy → Microservices -->
+      <line x1="298" y1="60" x2="381" y2="107" stroke="#00d4aa" stroke-width="1.2" marker-end="url(#arr-acc)"/>
+      <!-- Envoy → EDC Acceptor -->
+      <line x1="238" y1="80" x2="238" y2="119" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- EDC Acceptor → Microservices -->
+      <line x1="298" y1="140" x2="381" y2="168" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- Microservices → DB -->
+      <line x1="439" y1="228" x2="439" y2="249" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- Acquirer Mgmt → HSM -->
+      <line x1="496" y1="145" x2="547" y2="70" stroke="#00d4aa" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-acc)"/>
+      <!-- Acquirer Mgmt → ETL -->
+      <line x1="496" y1="183" x2="547" y2="169" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- ETL → DWH -->
+      <line x1="605" y1="184" x2="605" y2="203" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- GPN Services → GPN External -->
+      <line x1="662" y1="183" x2="713" y2="169" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- RKI → HSM -->
+      <line x1="662" y1="119" x2="713" y2="119" stroke="#264d52" stroke-width="1.2" marker-end="url(#arr)"/>
+      <!-- RKI label -->
+      <line x1="496" y1="130" x2="547" y2="119" stroke="#00d4aa" stroke-width="1" stroke-dasharray="3,2" marker-end="url(#arr-acc)"/>
+
+      <!-- Legend -->
+      <line x1="14" y1="410" x2="40" y2="410" stroke="#00d4aa" stroke-width="1.5"/>
+      <text x="46" y="413" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="8">Secure / encrypted channel</text>
+      <line x1="14" y1="428" x2="40" y2="428" stroke="#264d52" stroke-width="1.5"/>
+      <text x="46" y="431" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="8">Internal service call</text>
+      <line x1="180" y1="410" x2="206" y2="410" stroke="#264d52" stroke-width="1.5" stroke-dasharray="3,2"/>
+      <text x="212" y="413" fill="#4a6468" font-family="JetBrains Mono,monospace" font-size="8">Async / event-driven</text>
+    </svg>
+    <p class="diagram-caption">// Simplified acquiring engine architecture — abstracted for NDA compliance</p>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <p class="section-label fade-in">education</p>
+  <h2 class="section-title fade-in">Academic Background</h2>
+  <div class="edu-card fade-in">
+    <div>
+      <div class="edu-degree">Bachelor of Computer Science</div>
+      <div class="edu-school">Universitas Brawijaya</div>
+      <div class="edu-period">Aug 2020 – Feb 2024</div>
+    </div>
+    <div>
+      <div class="edu-gpa">3.78</div>
+      <div class="edu-gpa-label">/ 4.00 GPA</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT / FOOTER -->
+<footer id="contact">
+  <div class="fade-in">
+    <p class="section-label">contact</p>
+    <h2 class="contact-headline">Let's Build Something.</h2>
+    <p class="contact-sub">Open to backend engineering roles in fintech, distributed systems, and infrastructure.</p>
+    <div class="contact-links">
+      <a href="mailto:mralfayed@gmail.com" class="btn btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        Send Email
+      </a>
+      <a href="https://github.com/fayed06" target="_blank" rel="noopener" class="btn btn-outline">GitHub</a>
+      <a href="https://www.linkedin.com/in/fyd06/" target="_blank" rel="noopener" class="btn btn-outline">LinkedIn</a>
+    </div>
+    <div class="open-badge">Open to opportunities</div>
+  </div>
+  <div class="footer-bottom">
+    <span class="footer-copy">© 2025 Muhammad Rafly Alfayed · fayed06.github.io</span>
+    <span class="footer-langs">🇮🇩 Indonesian (Native) · 🇬🇧 English (Professional)</span>
+  </div>
+</footer>
+
+<script>
+  // Hamburger
+  function toggleMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  // Fade-in on scroll
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.fade-in').forEach((el, i) => {
+    el.style.transitionDelay = `${(i % 4) * 0.07}s`;
+    observer.observe(el);
+  });
+
+  // Active nav highlight
+  const sections = document.querySelectorAll('section[id], footer[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.style.color = a.getAttribute('href') === `#${current}` ? 'var(--accent)' : '';
+    });
+  }, { passive: true });
+</script>
+</body>
+</html>
